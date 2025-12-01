@@ -1,0 +1,190 @@
+/* Адаптивные стили для игры */
+
+@media (max-width: 768px) {
+    #gameCanvas {
+        width: 100% !important;
+        max-width: 100vw;
+        height: 60vh !important;
+    }
+
+    .game-layout {
+        flex-direction: column !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        max-width: 100vw;
+        height: auto !important;
+        flex-direction: row !important;
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    #handContainer {
+        flex-direction: row !important;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .pokemon-card {
+        min-width: 150px !important;
+        margin: 0 5px;
+    }
+
+    .game-controls {
+        flex-direction: column !important;
+        padding: 5px;
+    }
+
+    .btn {
+        padding: 8px 12px !important;
+        margin: 2px !important;
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #gameCanvas {
+        height: 50vh !important;
+    }
+
+    .pokemon-card {
+        min-width: 130px !important;
+        padding: 5px !important;
+    }
+
+    .card-image img {
+        width: 45px !important;
+        height: 45px !important;
+    }
+
+    .card-stats {
+        font-size: 11px !important;
+    }
+
+    .stat-bar {
+        height: 4px !important;
+    }
+}
+
+/* Портретная ориентация для мобилок */
+@media (max-width: 768px) and (orientation: portrait) {
+    body {
+        padding: 5px !important;
+    }
+
+    .container {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .game-header {
+        padding: 5px 10px !important;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        min-width: 70px;
+        margin: 2px !important;
+        padding: 3px 5px !important;
+    }
+}
+
+/* Ландшафтная ориентация для мобилок */
+@media (max-width: 900px) and (orientation: landscape) {
+    #gameCanvas {
+        height: 75vh !important;
+    }
+
+    .game-layout {
+        flex-direction: row !important;
+    }
+
+    .sidebar {
+        width: 40% !important;
+        max-height: 75vh !important;
+        flex-direction: column !important;
+    }
+}
+
+/* Для планшетов */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #gameCanvas {
+        width: 70% !important;
+        height: 70vh !important;
+    }
+
+    .sidebar {
+        width: 30% !important;
+    }
+
+    .pokemon-card {
+        min-width: 160px !important;
+    }
+}
+
+/* Большие экраны */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+    }
+
+    #gameCanvas {
+        width: 900px !important;
+        height: 700px !important;
+    }
+
+    .pokemon-card {
+        min-width: 200px !important;
+        margin: 10px;
+    }
+}
+
+/* Элементные цвета для карточек */
+.card-element.fire { background: linear-gradient(45deg, #FF4500, #FF6347); color: white; }
+.card-element.water { background: linear-gradient(45deg, #1E90FF, #00BFFF); color: white; }
+.card-element.grass { background: linear-gradient(45deg, #32CD32, #00FA9A); color: white; }
+.card-element.electric { background: linear-gradient(45deg, #FFD700, #FFA500); color: black; }
+.card-element.normal { background: linear-gradient(45deg, #A9A9A9, #D3D3D3); color: black; }
+.card-element.poison { background: linear-gradient(45deg, #9400D3, #8A2BE2); color: white; }
+.card-element.flying { background: linear-gradient(45deg, #87CEEB, #B0E0E6); color: black; }
+.card-element.rock { background: linear-gradient(45deg, #A0522D, #D2691E); color: white; }
+.card-element.psychic { background: linear-gradient(45deg, #FF69B4, #FF1493); color: white; }
+.card-element.fighting { background: linear-gradient(45deg, #B22222, #DC143C); color: white; }
+
+/* Анимация для покемонов */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes attack {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.attacking {
+    animation: attack 0.3s ease-in-out;
+}
+
+.floating {
+    animation: float 2s ease-in-out infinite;
+}
+
+/* Адаптивная сетка для карточек в руке */
+#handContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+@media (max-width: 768px) {
+    #handContainer {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        max-height: 200px;
+    }
+}

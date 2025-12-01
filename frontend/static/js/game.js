@@ -13,9 +13,14 @@ class GameClient {
         this.canvas.width = 800;
         this.canvas.height = 600;
 
+        // Загрузка изображений
+        this.images = {};
+        this.imageCache = new Map();
+
         this.setupEventListeners();
         this.startGameLoop();
         this.loadGameState();
+        this.loadImages(); // Загружаем картинки
 
         // Обновляем состояние каждую секунду
         this.updateInterval = setInterval(() => {
@@ -23,6 +28,84 @@ class GameClient {
                 this.loadGameState();
             }
         }, 1000);
+    }
+
+    async loadImages() {
+        const imagesToLoad = {
+            pokemons: [
+                'charmander', 'squirtle', 'bulbasaur', 'pikachu',
+                'jigglypuff', 'meowth', 'psyduck', 'growlithe'
+            ],
+            enemies: ['rattata', 'spearow', 'zubat', 'geodude'],
+            elements: ['fire', 'water', 'grass', 'electric', 'normal', 'poison', 'flying', 'rock', 'psychic', 'fighting'],
+            ui: ['pokeball', 'base']
+        };
+
+        const loadPromises = [];
+
+        // Загрузка покемонов
+        imagesToLoad.pokemons.forEach(name => {
+            const img = new Image();
+            img.src = `/static/images/pokemons/${name}.png`;
+            this.images[name] = img;
+            loadPromises.push(new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = () => {
+                    console.warn(`Failed to load image: ${name}`);
+                    this.images[name] = null;
+                    resolve();
+                };
+            }));
+        });
+
+        // Загрузка врагов
+        imagesToLoad.enemies.forEach(name => {
+            const img = new Image();
+            img.src = `/static/images/enemies/${name}.png`;
+            this.images[name] = img;
+            loadPromises.push(new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = () => {
+                    console.warn(`Failed to load image: ${name}`);
+                    this.images[name] = null;
+                    resolve();
+                };
+            }));
+        });
+
+        // Загрузка UI
+        imagesToLoad.ui.forEach(name => {
+            const img = new Image();
+            img.src = `/static/images/ui/${name}.png`;
+            this.images[name] = img;
+            loadPromises.push(new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = () => {
+                    console.warn(`Failed to load image: ${name}`);
+                    this.images[name] = null;
+                    resolve();
+                };
+            }));
+        });
+
+        await Promise.all(loadPromises);
+        console.log('Images loaded');
+    }
+
+    // Метод для отрисовки полоски здоровья
+    drawHealthBar(x, y, width, height, percent, bgColor = '#dc3545', fgColor = '#28a745') {
+        // Фон полоски
+        this.ctx.fillStyle = bgColor;
+        this.ctx.fillRect(x, y, width, height);
+
+        // Здоровье
+        this.ctx.fillStyle = fgColor;
+        this.ctx.fillRect(x, y, width * percent, height);
+
+        // Обводка полоски
+        this.ctx.strokeStyle = '#333';
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, width, height);
     }
 
     setupEventListeners() {
@@ -322,40 +405,78 @@ class GameClient {
             const x = pokemon.x || 100;
             const y = pokemon.y || 200;
             const healthPercent = (pokemon.current_health || pokemon.health) / pokemon.health;
+            const pokemonName = pokemon.name.toLowerCase();
+            const size = 65; // Размер покемона на поле
 
-            // Круг покемона
-            this.ctx.fillStyle = this.getElementColor(pokemon.element);
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, 25, 0, Math.PI * 2);
-            this.ctx.fill();
+            // Проверяем есть ли изображение
+            const image = this.images[pokemonName];
 
-            // Обводка
-            this.ctx.strokeStyle = '#333';
-            this.ctx.lineWidth = 2;
-            this.ctx.stroke();
+            if (image && image.complete && image.naturalWidth > 0) {
+                // Рисуем изображение покемона
+                this.ctx.save();
 
-            // Иконка типа
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = '20px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText(this.getElementIcon(pokemon.element), x, y + 8);
+                // Добавляем анимацию движения
+                if (pokemon.is_moving) {
+                    this.ctx.filter = 'brightness(1.1)';
+                    // Рисуем след движения
+                    this.ctx.globalAlpha = 0.3;
+                    this.ctx.drawImage(image, x - size/2 - 5, y - size/2 - 5, size, size);
+                    this.ctx.globalAlpha = 1.0;
+                }
+
+                // Основное изображение
+                this.ctx.drawImage(image, x - size/2, y - size/2, size, size);
+                this.ctx.restore();
+            } else {
+                // Если нет изображения, рисуем круг как раньше
+                this.ctx.fillStyle = this.getElementColor(pokemon.element);
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 25, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Обводка
+                this.ctx.strokeStyle = '#333';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+
+                // Иконка типа
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '20px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(this.getElementIcon(pokemon.element), x, y + 8);
+            }
 
             // Имя покемона
             this.ctx.fillStyle = '#000';
             this.ctx.font = 'bold 12px Arial';
-            this.ctx.fillText(pokemon.name.substring(0, 8), x, y + 40);
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(pokemon.name.substring(0, 8), x, y + 45);
 
             // Полоска здоровья
-            this.ctx.fillStyle = '#dc3545';
-            this.ctx.fillRect(x - 30, y - 40, 60, 6);
+            this.drawHealthBar(x, y - 40, 60, 6, healthPercent);
 
-            this.ctx.fillStyle = '#28a745';
-            this.ctx.fillRect(x - 30, y - 40, 60 * healthPercent, 6);
+            // Индикатор движения
+            if (pokemon.is_moving) {
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.beginPath();
+                this.ctx.arc(x + 30, y - 45, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
 
-            // Обводка полоски здоровья
-            this.ctx.strokeStyle = '#333';
-            this.ctx.lineWidth = 1;
-            this.ctx.strokeRect(x - 30, y - 40, 60, 6);
+            // Линия к цели (если есть)
+            if (pokemon.target && this.gameState.enemies) {
+                const targetEnemy = this.gameState.enemies.find(e => e.id === pokemon.target);
+                if (targetEnemy) {
+                    this.ctx.strokeStyle = '#ff4500';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.setLineDash([5, 5]);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, y);
+                    this.ctx.lineTo(targetEnemy.x, targetEnemy.y);
+                    this.ctx.stroke();
+                    this.ctx.setLineDash([]);
+                }
+            }
         });
     }
 
@@ -366,49 +487,52 @@ class GameClient {
             const x = enemy.x || Math.random() * 700 + 50;
             const y = enemy.y || 100;
             const healthPercent = (enemy.current_health || enemy.health) / enemy.health;
+            const enemyName = enemy.name.toLowerCase();
+            const size = 50; // Размер врага
 
-            // Круг врага
-            this.ctx.fillStyle = '#dc3545';
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, 20, 0, Math.PI * 2);
-            this.ctx.fill();
+            // Проверяем есть ли изображение
+            const image = this.images[enemyName];
 
-            // Обводка
-            this.ctx.strokeStyle = '#333';
-            this.ctx.lineWidth = 2;
-            this.ctx.stroke();
+            if (image && image.complete && image.naturalWidth > 0) {
+                // Рисуем изображение врага
+                this.ctx.drawImage(image, x - size/2, y - size/2, size, size);
+            } else {
+                // Если нет изображения, рисуем круг как раньше
+                this.ctx.fillStyle = '#dc3545';
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 20, 0, Math.PI * 2);
+                this.ctx.fill();
 
-            // Иконка врага
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = '16px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('👾', x, y + 6);
+                // Обводка
+                this.ctx.strokeStyle = '#333';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+
+                // Иконка врага
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('👾', x, y + 6);
+            }
 
             // Имя врага
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '10px Arial';
-            this.ctx.fillText(enemy.name.substring(0, 6), x, y + 30);
+            this.ctx.fillText(enemy.name.substring(0, 6), x, y + 35);
 
             // Полоска здоровья врага
-            this.ctx.fillStyle = '#ff6b6b';
-            this.ctx.fillRect(x - 25, y - 35, 50, 5);
-
-            this.ctx.fillStyle = '#ffc107';
-            this.ctx.fillRect(x - 25, y - 35, 50 * healthPercent, 5);
-
-            // Обводка полоски здоровья
-            this.ctx.strokeStyle = '#333';
-            this.ctx.lineWidth = 1;
-            this.ctx.strokeRect(x - 25, y - 35, 50, 5);
+            this.drawHealthBar(x - 25, y - 35, 50, 5, healthPercent, '#ff6b6b', '#ffc107');
 
             // Стрелка направления движения (вниз)
-            this.ctx.fillStyle = '#fff';
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, y + 35);
-            this.ctx.lineTo(x - 5, y + 25);
-            this.ctx.lineTo(x + 5, y + 25);
-            this.ctx.closePath();
-            this.ctx.fill();
+            if (y < 400) { // Показываем только пока враг не ушел слишком низко
+                this.ctx.fillStyle = '#fff';
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y + 35);
+                this.ctx.lineTo(x - 5, y + 25);
+                this.ctx.lineTo(x + 5, y + 25);
+                this.ctx.closePath();
+                this.ctx.fill();
+            }
         });
     }
 
@@ -420,7 +544,10 @@ class GameClient {
             'electric': '#FFD700',
             'normal': '#A9A9A9',
             'poison': '#9400D3',
-            'flying': '#87CEEB'
+            'flying': '#87CEEB',
+            'rock': '#A0522D',
+            'psychic': '#FF69B4',
+            'fighting': '#B22222'
         };
         return colors[element] || '#808080';
     }
@@ -433,7 +560,10 @@ class GameClient {
             'electric': '⚡',
             'normal': '⚪',
             'poison': '☠️',
-            'flying': '🕊️'
+            'flying': '🕊️',
+            'rock': '🪨',
+            'psychic': '🔮',
+            'fighting': '🥊'
         };
         return icons[element] || '⚫';
     }
@@ -484,6 +614,7 @@ class GameClient {
         this.updatePlayerHand();
     }
 
+    // Обновите метод updatePlayerHand для отображения картинок в карточках
     updatePlayerHand() {
         const handContainer = document.getElementById('handContainer');
         if (!handContainer || !this.gameState.hand) return;
@@ -491,24 +622,36 @@ class GameClient {
         if (this.gameState.hand.length === 0) {
             handContainer.innerHTML = `
                 <div style="text-align: center; width: 100%; padding: 40px; color: #666;">
-                    No cards in hand. Open a pokeball to get your first Pokemon!
+                    <img src="/static/images/ui/pokeball.png" alt="Pokeball" style="width: 50px; height: 50px; opacity: 0.5;">
+                    <div style="margin-top: 10px;">No cards in hand. Open a pokeball to get Pokemon!</div>
                 </div>
             `;
             return;
         }
 
-        handContainer.innerHTML = this.gameState.hand.map(pokemon => `
-            <div class="pokemon-card" data-card-id="${pokemon.id}">
-                <div class="card-header">${pokemon.name}</div>
-                <div class="card-icon">${this.getElementIcon(pokemon.element)}</div>
-                <div class="card-stats">
-                    <div>❤️ ${pokemon.health} HP</div>
-                    <div>⚔️ ${pokemon.attack} ATK</div>
+        handContainer.innerHTML = this.gameState.hand.map(pokemon => {
+            const pokemonName = pokemon.name.toLowerCase();
+            const hasImage = this.images[pokemonName] && this.images[pokemonName].complete;
+
+            return `
+                <div class="pokemon-card" data-card-id="${pokemon.id}">
+                    <div class="card-header">${pokemon.name}</div>
+                    <div class="card-image">
+                        ${hasImage ?
+                            `<img src="/static/images/pokemons/${pokemonName}.png" alt="${pokemon.name}" style="width: 60px; height: 60px;">` :
+                            `<div class="card-icon">${this.getElementIcon(pokemon.element)}</div>`
+                        }
+                    </div>
+                    <div class="card-stats">
+                        <div>❤️ ${pokemon.health} HP</div>
+                        <div>⚔️ ${pokemon.attack} ATK</div>
+                        <div>⚡ ${pokemon.speed ? pokemon.speed.toFixed(1) : '1.5'}</div>
+                    </div>
+                    <div class="card-element ${pokemon.element}">${pokemon.element}</div>
+                    <div class="card-hint">Click to select</div>
                 </div>
-                <div class="card-element">${pokemon.element}</div>
-                <div class="card-hint">Click to select</div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Добавляем стили для иконок
         if (!document.querySelector('#card-styles')) {
@@ -526,6 +669,16 @@ class GameClient {
                     margin-top: 5px;
                     text-align: center;
                     font-style: italic;
+                }
+                .card-element {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    margin-top: 5px;
+                    color: white;
+                    text-transform: uppercase;
                 }
             `;
             document.head.appendChild(style);
@@ -559,11 +712,24 @@ class GameClient {
 
 // Инициализация игры при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    if (!checkAuth()) {
+    // Проверяем авторизацию
+    if (typeof checkAuth === 'function' && !checkAuth()) {
         window.location.href = '/login';
         return;
     }
 
+    // Проверяем, что есть необходимые элементы на странице
+    const gameCanvas = document.getElementById('gameCanvas');
+    if (!gameCanvas) {
+        console.error('Game canvas not found!');
+        return;
+    }
+
     // Инициализируем игру
-    window.gameClient = new GameClient();
+    try {
+        window.gameClient = new GameClient();
+    } catch (error) {
+        console.error('Failed to initialize game:', error);
+        showNotification('Failed to start the game. Please refresh the page.', 'error');
+    }
 });
