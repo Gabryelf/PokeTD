@@ -1,6 +1,6 @@
 # 🎮 PokeTD - Pokemon Tower Defense
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-0.0.2-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
@@ -15,7 +15,7 @@ source venv/bin/activate  # или venv\Scripts\activate на Windows
 pip install -r requirements.txt
 python backend/main.py
 
-✨ Особенности версии 1.0.0
+✨ Особенности версии 0.0.2
 
 🎯 Основные изменения:
 
@@ -48,6 +48,23 @@ python backend/main.py
 
 🎮 Геймплей
 
+🗄 Структура проекта
+![Структура проекта](screens/2025-12-01_23-56-43.png)
+
+🗄 STRUCTURE
+![Структура проекта](screens/2025-12-02_01-31-42.png)
+
+🗄 PROJECT
+![Структура проекта](screens/2025-12-02_01-31-59.png)
+
+🗄 SCREENS
+![Структура проекта](screens/2025-12-02_01-59-42.png)
+
+🗄 SCREENS
+![Структура проекта](screens/2025-12-02_02-00-35.png)
+
+🗄 SWAGGER API
+![Структура проекта](screens/2025-12-02_02-01-18.png)
 
 Выберите покемона из доступных карточек
 
@@ -81,9 +98,6 @@ Start Command: python backend/main.py
 
 🤝 Вклад в проект
 См. CONTRIBUTING.md для руководства по внесению изменений.
-
-📄 Лицензия
-Этот проект лицензирован под лицензией MIT - см. файл LICENSE.
 
 ⭐ Если вам нравится проект, поставьте звезду на GitHub!
 

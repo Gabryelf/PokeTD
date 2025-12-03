@@ -43,3 +43,29 @@ poke-tower-defense/
 ├── .gitignore
 ├── README.md
 └── docker-compose.yml         # Для будущего масштабирования
+
+Update assets
+assets/
+├── images/
+│   ├── pokemons/
+│   │   ├── pikachu.png
+│   │   ├── charmander.png
+│   │   ├── bulbasaur.png
+│   │   ├── squirtle.png
+│   │   └── pidgey.png
+│   ├── enemies/
+│   │   ├── ratata.png
+│   │   ├── zubat.png
+│   │   ├── geodude.png
+│   │   ├── magikarp.png
+│   │   └── spearow.png
+│   ├── elements/
+│   │   ├── fire.png
+│   │   ├── water.png
+│   │   ├── grass.png
+│   │   ├── electric.png
+│   │   └── flying.png
+│   └── ui/
+│       ├── pokeball.png
+│       ├── base.png
+│       └── background.png
