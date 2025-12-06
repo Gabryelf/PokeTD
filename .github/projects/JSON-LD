@@ -1,0 +1,22 @@
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "PokeTD",
+  "description": "Pokémon Tower Defense стратегическая игра",
+  "applicationCategory": "Game",
+  "gamePlatform": "Web Browser",
+  "operatingSystem": "Any",
+  "author": {
+    "@type": "Person",
+    "name": "Gabryelf"
+  },
+  "datePublished": "2024-01-01",
+  "genre": ["Strategy", "Tower Defense", "Pokémon"],
+  "playMode": "SinglePlayer, MultiPlayer",
+  "screenshot": [
+    "https://poketd-1.onrender.com/screens/main_menu.png",
+    "https://poketd-1.onrender.com/screens/gameplay.png"
+  ],
+  "softwareRequirements": "Web Browser",
+  "url": "https://github.com/Gabryelf/PokeTD"
+}
