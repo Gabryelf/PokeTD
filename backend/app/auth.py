@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
-    Проверяет пароль с использованием bcrypt
+    Проверяет пароль с использованием чистого bcrypt
     """
     try:
         # Кодируем пароль в bytes
@@ -33,7 +33,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     """
-    Хеширует пароль с использованием bcrypt
+    Хеширует пароль с использованием чистого bcrypt
     """
     # Кодируем пароль в bytes
     password_bytes = password.encode('utf-8')
@@ -82,7 +82,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 
-async def get_current_active_user(current_user: schemas.UserResponse = Depends(get_current_user)):
+async def get_current_active_user(current_user=Depends(get_current_user)):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
