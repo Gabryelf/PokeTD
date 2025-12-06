@@ -14,10 +14,46 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def verify_password(plain_password, hashed_password):
+    # Аналогичная обработка для верификации
+    password_bytes = plain_password.encode('utf-8')
+
+    # Если пароль длиннее 72 байтов, обрабатываем так же как при хешировании
+    if len(password_bytes) > 72:
+        import hashlib
+        import base64
+
+        password_hash = hashlib.sha256(password_bytes).digest()
+        password_str = base64.b64encode(password_hash).decode('utf-8')
+        if len(password_str) > 72:
+            password_str = password_str[:72]
+
+        return pwd_context.verify(password_str, hashed_password)
+
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password):
+    # Исправление для bcrypt ограничения в 72 байта
+    password_bytes = password.encode('utf-8')
+
+    # Если пароль длиннее 72 байтов, обрезаем его
+    if len(password_bytes) > 72:
+        # Более безопасный подход: хешируем пароль и используем хеш
+        import hashlib
+        import base64
+
+        # Создаем хеш от полного пароля
+        password_hash = hashlib.sha256(password_bytes).digest()
+        # Конвертируем в строку base64 (безопаснее чем обрезание UTF-8)
+        password_str = base64.b64encode(password_hash).decode('utf-8')
+        # Обрезаем до 72 символов
+        if len(password_str) > 72:
+            password_str = password_str[:72]
+
+        # Используем обрезанный хеш как пароль для bcrypt
+        return pwd_context.hash(password_str)
+
+    # Если пароль нормальной длины, используем как есть
     return pwd_context.hash(password)
 
 
