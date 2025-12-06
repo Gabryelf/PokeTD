@@ -1,7 +1,7 @@
 🎮 PokeTD - Pokémon Tower Defense Game
-<div align="center">
-🗄 Структура проекта
 ![Lobby](screens/2025-12-06_21-48-22.png)
+<div align="center">
+
 
 https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi
 https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
