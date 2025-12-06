@@ -21,7 +21,7 @@
 ## 🎬 Видео геймплея
 <div align="center">
 
-[![Gameplay Video](https://img.shields.io/badge/▶_Смотреть_геймплей-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](screens/videos/bandicam%202025-12-06%2021-59-26-155.mp4)
+[![Gameplay Video](https://img.shields.io/badge/▶_Смотреть_геймплей-FF0000?style=for-the-badge&logo=youtube&logoColor=white)]([screens/videos/bandicam%202025-12-06%2021-59-26-155.mp4](https://cloud.mail.ru/public/zFVB/42zHd9LUo))
 [![Cloud Link](https://img.shields.io/badge/📁_Облако-0072C6?style=for-the-badge&logo=mail.ru&logoColor=white)](https://cloud.mail.ru/public/zFVB/42zHd9LUo)
 
 </div>
