@@ -1,6 +1,5 @@
 🎮 PokeTD - Pokémon Tower Defense Game
 ![Lobby](screens/2025-12-06_21-48-22.png)
-<div align="center">
 
 
 https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi
