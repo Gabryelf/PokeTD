@@ -16,7 +16,7 @@
 
 </div>
 🎬 Видео геймплея
-<div align="center">
+![Video](screens/videos/bandicam 2025-12-06 21-59-26-155.mp4)
 [https://screens/gameplay_thumbnail.png](https://cloud.mail.ru/public/zFVB/42zHd9LUo)
 
 Нажмите на изображение для просмотра геймплея
