@@ -3,14 +3,12 @@
 ![Version](https://img.shields.io/badge/version-0.0.2-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Lobby](screens/2025-12-06_21-48-22.png)
-
-
-![Version](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 ![Version](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Version](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Version](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 ![Version](https://img.shields.io/badge/SQLAlchemy-FF6F61?style=for-the-badge)
+
+![Lobby](screens/2025-12-06_21-48-22.png)
 
 Стратегическая Tower Defense игра в мире Pokémon с прокачкой, коллекционированием и PvP элементами!
 
