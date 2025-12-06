@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -9,52 +9,45 @@ from . import schemas, crud
 from .config import settings
 from .database import get_db
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-def verify_password(plain_password, hashed_password):
-    # Аналогичная обработка для верификации
-    password_bytes = plain_password.encode('utf-8')
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Проверяет пароль с использованием bcrypt
+    """
+    try:
+        # Кодируем пароль в bytes
+        password_bytes = plain_password.encode('utf-8')
 
-    # Если пароль длиннее 72 байтов, обрабатываем так же как при хешировании
-    if len(password_bytes) > 72:
-        import hashlib
-        import base64
+        # Если пароль слишком длинный, обрезаем до 72 байтов
+        if len(password_bytes) > 72:
+            password_bytes = password_bytes[:72]
 
-        password_hash = hashlib.sha256(password_bytes).digest()
-        password_str = base64.b64encode(password_hash).decode('utf-8')
-        if len(password_str) > 72:
-            password_str = password_str[:72]
-
-        return pwd_context.verify(password_str, hashed_password)
-
-    return pwd_context.verify(plain_password, hashed_password)
+        # Проверяем пароль
+        return bcrypt.checkpw(password_bytes, hashed_password.encode('utf-8'))
+    except Exception as e:
+        print(f"Password verification error: {e}")
+        return False
 
 
-def get_password_hash(password):
-    # Исправление для bcrypt ограничения в 72 байта
+def get_password_hash(password: str) -> str:
+    """
+    Хеширует пароль с использованием bcrypt
+    """
+    # Кодируем пароль в bytes
     password_bytes = password.encode('utf-8')
 
-    # Если пароль длиннее 72 байтов, обрезаем его
+    # Обрезаем до 72 байтов если нужно
     if len(password_bytes) > 72:
-        # Более безопасный подход: хешируем пароль и используем хеш
-        import hashlib
-        import base64
+        password_bytes = password_bytes[:72]
 
-        # Создаем хеш от полного пароля
-        password_hash = hashlib.sha256(password_bytes).digest()
-        # Конвертируем в строку base64 (безопаснее чем обрезание UTF-8)
-        password_str = base64.b64encode(password_hash).decode('utf-8')
-        # Обрезаем до 72 символов
-        if len(password_str) > 72:
-            password_str = password_str[:72]
+    # Генерируем соль и хеш
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
 
-        # Используем обрезанный хеш как пароль для bcrypt
-        return pwd_context.hash(password_str)
-
-    # Если пароль нормальной длины, используем как есть
-    return pwd_context.hash(password)
+    # Возвращаем как строку
+    return hashed.decode('utf-8')
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -87,3 +80,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
+
+
+async def get_current_active_user(current_user: schemas.UserResponse = Depends(get_current_user)):
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
