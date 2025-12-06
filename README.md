@@ -17,7 +17,7 @@
 </div>
 🎬 Видео геймплея
 <div align="center">
-https://screens/gameplay_thumbnail.png
+[https://screens/gameplay_thumbnail.png](https://cloud.mail.ru/public/zFVB/42zHd9LUo)
 
 Нажмите на изображение для просмотра геймплея
 
